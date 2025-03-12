@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:notestoaudio/themes.dart';
+import 'package:notestoaudio/views/capture/edit_notes.dart';
 
 class CaptureNotesPage extends StatefulWidget {
   @override
@@ -21,6 +22,13 @@ class _CaptureNotesPageState extends State<CaptureNotesPage> {
         _images.add(File(pickedFile.path));
       });
     }
+  }
+
+  void _navigateToEditNotes() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditNotesPage(images: _images)),
+    );
   }
 
   @override
@@ -82,7 +90,9 @@ class _CaptureNotesPageState extends State<CaptureNotesPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _images.isNotEmpty ? () {/* Navigate to scanning & editing page */} : null,
+              onPressed: _images.isNotEmpty ? () {
+                _navigateToEditNotes();
+              } : null,
               style: _images.isNotEmpty
                   ? ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,

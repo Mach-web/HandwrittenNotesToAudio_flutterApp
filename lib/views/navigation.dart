@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notestoaudio/views/capture_notes.dart';
+import 'package:notestoaudio/views/capture/capture_notes.dart';
 import 'package:notestoaudio/views/home_page.dart';
 
 class NavigationScreen extends StatefulWidget {
