@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import 'package:orthocannon/views/onboarding_screen.dart';
+import 'package:notestoaudio/views/navigation.dart';
 
 class AppPages{
-  static const String onboarding = '/Onboarding';
+  static const String navigation = '/navigation';
   
   static final routes = [
-    GetPage(name: onboarding, page: () => const OnboardingScreen()),
+    GetPage(name: navigation, page: () => NavigationScreen()),
   ];
 }
