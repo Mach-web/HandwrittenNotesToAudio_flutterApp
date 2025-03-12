@@ -1,15 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:notestoaudio/controllers/capture_controller.dart';
 
 class EditNotesPage extends StatelessWidget {
   final List<File> images;
+  final CaptureController _captureController = CaptureController();
   EditNotesPage({required this.images});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Notes'),
+        title: Text('Edit Scanned Notes'),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
@@ -18,8 +20,10 @@ class EditNotesPage extends StatelessWidget {
           children: [
             Expanded(
               child: TextFormField(
-                maxLines: null,
-                expands: true,
+                controller: _captureController.notesController,
+                keyboardType: TextInputType.multiline,
+                maxLines: 10500,
+                // expands: true,
                 decoration: InputDecoration(
                   labelText: 'Edit your notes here...',
                   alignLabelWithHint: true,
@@ -43,7 +47,9 @@ class EditNotesPage extends StatelessWidget {
                       ),
                     ),
                     label: Text('Play Audio'),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushNamed('/audio');
+                    },
                   ),
                   SizedBox(width: 5),
                   ElevatedButton.icon(
