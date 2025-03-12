@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:notestoaudio/themes.dart';
 import 'package:notestoaudio/views/capture/edit_notes.dart';
@@ -15,7 +16,16 @@ class _CaptureNotesPageState extends State<CaptureNotesPage> {
   List<File> _images = [];
 
   Future<void> _pickImage(ImageSource source) async {
-    if (_images.length >= 5) return; // Limit to 5 images
+    if (_images.length >= 5) {
+      Get.snackbar(
+        'Limit reached',
+        'You can only select up to 5 images',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.black,
+        colorText: Colors.white,
+      );
+      return;
+      } // Limit to 5 images
     final pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {

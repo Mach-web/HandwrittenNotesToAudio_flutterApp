@@ -8,16 +8,21 @@ class EditNotesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Edit Notes')),
+      appBar: AppBar(
+        title: Text('Edit Notes'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Expanded(
-              child: TextField(
+              child: TextFormField(
                 maxLines: null,
+                expands: true,
                 decoration: InputDecoration(
-                  hintText: 'Edit your notes here...',
+                  labelText: 'Edit your notes here...',
+                  alignLabelWithHint: true,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -29,7 +34,7 @@ class EditNotesPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton.icon(
-                    icon: Icon(Icons.audiotrack, color: Colors.white,),
+                    icon: Icon(Icons.audiotrack, color: Colors.white),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
@@ -40,9 +45,9 @@ class EditNotesPage extends StatelessWidget {
                     label: Text('Play Audio'),
                     onPressed: () {},
                   ),
-                  SizedBox(width: 5,),
+                  SizedBox(width: 5),
                   ElevatedButton.icon(
-                    icon: Icon(Icons.picture_as_pdf, color: Colors.white,),
+                    icon: Icon(Icons.picture_as_pdf, color: Colors.white),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
@@ -53,9 +58,9 @@ class EditNotesPage extends StatelessWidget {
                     label: Text('Download PDF'),
                     onPressed: () {},
                   ),
-                   SizedBox(width: 5,),
+                  SizedBox(width: 5),
                   ElevatedButton.icon(
-                    icon: Icon(Icons.description, color: Colors.white,),
+                    icon: Icon(Icons.description, color: Colors.white),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
