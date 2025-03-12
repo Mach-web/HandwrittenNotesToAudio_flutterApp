@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notestoaudio/views/capture_notes.dart';
 import 'package:notestoaudio/views/home_page.dart';
 
 class NavigationScreen extends StatefulWidget {
@@ -55,18 +56,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
         unselectedItemColor:
             Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
         onTap: _onItemTapped,
-      ),
-    );
-  }
-}
-
-class CaptureNotesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Capture and Convert Notes',
-        style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
   }

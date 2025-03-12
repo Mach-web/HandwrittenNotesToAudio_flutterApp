@@ -5,6 +5,10 @@ class AppThemes {
     brightness: Brightness.light,
     primarySwatch: Colors.blue,
     scaffoldBackgroundColor: Colors.white,
+    colorScheme: ColorScheme.light(
+      primary: const Color.fromARGB(255, 17, 87, 144),
+      secondary: const Color.fromARGB(255, 9, 95, 166),
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
@@ -24,6 +28,10 @@ class AppThemes {
     brightness: Brightness.dark,
     primarySwatch: Colors.blue,
     scaffoldBackgroundColor: Colors.black,
+    colorScheme: ColorScheme.dark(
+      primary: const Color.fromARGB(255, 17, 87, 144),
+      secondary: const Color.fromARGB(255, 9, 95, 166),
+    ),
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.black,
       foregroundColor: Colors.white,
