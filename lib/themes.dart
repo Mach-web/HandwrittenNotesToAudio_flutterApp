@@ -15,7 +15,7 @@ class AppThemes {
       bodyMedium: TextStyle(fontSize: 16, color: Colors.black87),
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      selectedItemColor: Colors.blue,
+      selectedItemColor: const Color.fromARGB(255, 9, 95, 166),
       unselectedItemColor: Colors.grey,
     ),
   );
