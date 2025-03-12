@@ -83,7 +83,17 @@ class _CaptureNotesPageState extends State<CaptureNotesPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _images.isNotEmpty ? () {/* Navigate to scanning & editing page */} : null,
-              child: Text('Scan & Edit Notes'),
+              style: _images.isNotEmpty
+                  ? ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    )
+                  : null,
+              child: Text('Scan & Edit Notes', style: TextStyle(fontSize: 18)),
             ),
           ],
         ),
