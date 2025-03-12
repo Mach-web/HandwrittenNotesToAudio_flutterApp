@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 
-
-// Main screen with bottom navigation
-class NavigationScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  _NavigationScreenState createState() => _NavigationScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _NavigationScreenState extends State<NavigationScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    NotesScreen(),
-    ChatbotScreen(),
+  static final List<Widget> _screens = <Widget>[
+    HomePage(),
+    CaptureNotesPage(),
+    SummarizationPage(),
+    AudioRecordingPage(),
+    ChatbotPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -24,239 +25,65 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
+      body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notes),
-            label: 'Notes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chatbot',
-          ),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: 'Capture'),
+          BottomNavigationBarItem(icon: Icon(Icons.text_snippet), label: 'Summarize'),
+          BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'Record'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chatbot'),
         ],
         currentIndex: _selectedIndex,
+        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
         onTap: _onItemTapped,
       ),
     );
   }
 }
 
-// Notes screen with a list of notes
-class NotesScreen extends StatelessWidget {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Notes'),
-      ),
-      body: ListView.builder(
-        itemCount: 10, // Placeholder for note count
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('Note $index'),
-            subtitle: Text('This is a note'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NoteDetailScreen()),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewNoteScreen()),
-          );
-        },
-        child: Icon(Icons.add),
-      ),
+    return Center(
+      child: Text('Welcome to Smart Notes App', style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }
 
-// Chatbot screen with a simple chat interface
-class ChatbotScreen extends StatelessWidget {
+class CaptureNotesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Chatbot'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: 10, // Placeholder for message count
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('Message $index'),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Type a message',
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () {
-                    // Placeholder for sending message
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return Center(
+      child: Text('Capture and Convert Notes', style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }
 
-// Camera screen placeholder
-class CameraScreen extends StatelessWidget {
+class SummarizationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Take Picture'),
-      ),
-      body: Center(
-        child: Text('Camera Preview'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Placeholder for capturing image
-        },
-        child: Icon(Icons.camera),
-      ),
+    return Center(
+      child: Text('Summarize Your Notes', style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }
 
-// Audio recording screen placeholder
-class RecordAudioScreen extends StatelessWidget {
+class AudioRecordingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Record Audio'),
-      ),
-      body: Center(
-        child: Text('Recording Controls'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Placeholder for start/stop recording
-        },
-        child: Icon(Icons.mic),
-      ),
+    return Center(
+      child: Text('Record and Transcribe Audio', style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }
 
-// Screen for creating a new note
-class NewNoteScreen extends StatelessWidget {
+class ChatbotPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('New Note'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Title',
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Content',
-              ),
-              maxLines: 5,
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Return to notes screen
-              },
-              child: Text('Save'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Screen for viewing note details
-class NoteDetailScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Note Detail'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Note Title',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Note content goes here...',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Placeholder for summarizing note
-                  },
-                  child: Text('Summarize'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Placeholder for listening to note
-                  },
-                  child: Text('Listen'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Placeholder for exporting note
-                  },
-                  child: Text('Export'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+    return Center(
+      child: Text('Ask AI Your Questions', style: Theme.of(context).textTheme.bodyLarge),
     );
   }
 }
