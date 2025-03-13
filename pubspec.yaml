@@ -44,6 +44,7 @@ dependencies:
   flutter_sound: ^9.25.6
   speech_to_text: ^7.0.0
   docx_template: ^0.4.0
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:

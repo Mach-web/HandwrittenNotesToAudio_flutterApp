@@ -19,6 +19,9 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   String? _audioPath;
   stt.SpeechToText _speechToText = stt.SpeechToText();
   String _convertedText = "";
+  Duration _recordingDuration = Duration.zero;
+  Duration _playingPosition = Duration.zero;
+  Duration _playingTotalDuration = Duration.zero;
 
   @override
   void initState() {
@@ -30,12 +33,28 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
 
   Future<void> _initRecorder() async {
     await _recorder!.openRecorder();
-    // await _recorder!.openAudioSession();
     await _player!.openPlayer();
-    // await _player!.openAudioSession();
+
+    _recorder!.onProgress!.listen((e) {
+      if (_isRecording) {
+        setState(() {
+          _recordingDuration = e.duration;
+        });
+      }
+    });
+
+    _player!.onProgress!.listen((e) {
+      if (_isPlaying) {
+        setState(() {
+          _playingPosition = e.position;
+          _playingTotalDuration = e.duration;
+        });
+      }
+    });
   }
 
   Future<void> _startRecording() async {
+    if (_isPlaying) await _stopAudio(); // Stop playback before recording
     Directory tempDir = await getApplicationDocumentsDirectory();
     _audioPath = '${tempDir.path}/recorded_audio.aac';
     await _recorder!.startRecorder(toFile: _audioPath);
@@ -44,20 +63,33 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
 
   Future<void> _stopRecording() async {
     await _recorder!.stopRecorder();
-    setState(() => _isRecording = false);
+    setState(() {
+      _isRecording = false;
+      _recordingDuration = Duration.zero;
+    });
   }
 
   Future<void> _playAudio() async {
     if (_audioPath == null) return;
-    await _player!.startPlayer(fromURI: _audioPath, whenFinished: () {
-      setState(() => _isPlaying = false);
-    });
+    if (_isRecording) await _stopRecording(); // Stop recording before playback
+    await _player!.startPlayer(
+      fromURI: _audioPath,
+      whenFinished: () {
+        setState(() {
+          _isPlaying = false;
+          _playingPosition = Duration.zero;
+        });
+      },
+    );
     setState(() => _isPlaying = true);
   }
 
   Future<void> _stopAudio() async {
     await _player!.stopPlayer();
-    setState(() => _isPlaying = false);
+    setState(() {
+      _isPlaying = false;
+      _playingPosition = Duration.zero;
+    });
   }
 
   Future<void> _convertSpeechToText() async {
@@ -75,25 +107,31 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
 
   Future<void> _downloadAsPDF() async {
     PdfDocument document = PdfDocument();
-    document.pages.add().graphics.drawString(_convertedText, PdfStandardFont(PdfFontFamily.helvetica, 12));
+    document.pages.add().graphics.drawString(
+      _convertedText,
+      PdfStandardFont(PdfFontFamily.helvetica, 12),
+    );
     List<int> bytes = document.saveSync();
     document.dispose();
     Directory tempDir = await getApplicationDocumentsDirectory();
     File pdfFile = File('${tempDir.path}/notes.pdf');
     await pdfFile.writeAsBytes(bytes);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('PDF saved to ${pdfFile.path}')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('PDF saved to ${pdfFile.path}')));
   }
 
   Future<void> _downloadAsDOCX() async {
     final f = File("template.docx");
-  final docx = await DocxTemplate.fromBytes(await f.readAsBytes());
-  
+    final docx = await DocxTemplate.fromBytes(await f.readAsBytes());
     Content content = Content();
     content.add(TextContent("body", _convertedText));
     Directory tempDir = await getApplicationDocumentsDirectory();
     File file = File('${tempDir.path}/notes.docx');
     await file.writeAsBytes(await docx.generate(content) ?? []);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('DOCX saved to ${file.path}')));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('DOCX saved to ${file.path}')));
   }
 
   void _summarizeText() {
@@ -105,23 +143,55 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     });
   }
 
+  String _formatDuration(Duration d) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(d.inMinutes.remainder(60));
+    final seconds = twoDigits(d.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
   @override
   void dispose() {
     _recorder!.closeRecorder();
-    // _recorder!.closeAudioSession();
     _player!.closePlayer();
-    // _player!.closeAudioSession();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Record & Convert Audio')),
+      appBar: AppBar(
+        title: Text('Record & Convert Audio'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.mic),
+            color:
+                _isRecording
+                    ? Colors.red
+                    : null, // Red when recording, default otherwise
+            onPressed: () {
+              if (_isRecording) {
+                _stopRecording();
+              } else {
+                _startRecording();
+              }
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Text(
+              _isRecording
+                  ? 'Recording: ${_formatDuration(_recordingDuration)}'
+                  : _isPlaying
+                  ? 'Playing: ${_formatDuration(_playingPosition)} / ${_formatDuration(_playingTotalDuration)}'
+                  : 'Ready',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: Icon(_isRecording ? Icons.stop : Icons.mic),
               label: Text(_isRecording ? 'Stop Recording' : 'Start Recording'),
@@ -129,10 +199,21 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
             ),
             const SizedBox(height: 10),
             if (_audioPath != null)
-              ElevatedButton.icon(
-                icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
-                label: Text(_isPlaying ? 'Stop Playback' : 'Play Audio'),
-                onPressed: _isPlaying ? _stopAudio : _playAudio,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
+                    label: Text(_isPlaying ? 'Stop Playback' : 'Play Audio'),
+                    onPressed: _isPlaying ? _stopAudio : _playAudio,
+                  ),
+                  const SizedBox(width: 10),
+                  IconButton(
+                    icon: Icon(Icons.download),
+                    onPressed: _downloadAsPDF, // Changed from share to download
+                    tooltip: 'Download PDF',
+                  ),
+                ],
               ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -148,23 +229,28 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
             Expanded(
               child: SingleChildScrollView(
                 child: Text(
-                  _convertedText.isNotEmpty ? _convertedText : 'No text converted yet.',
+                  _convertedText.isNotEmpty
+                      ? _convertedText
+                      : 'No text converted yet.',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
             ),
             const SizedBox(height: 10),
             ElevatedButton.icon(
-              icon: Icon(Icons.summarize, color: Colors.white,),
+              icon: Icon(Icons.summarize, color: Colors.white),
               label: Text('Summarize Text'),
               style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
               onPressed: _summarizeText,
             ),
             Row(
@@ -173,27 +259,33 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                 ElevatedButton.icon(
                   icon: Icon(Icons.picture_as_pdf, color: Colors.white,),
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 12,
                     ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
                   label: Text('Save as PDF'),
                   onPressed: _downloadAsPDF,
                 ),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.description, color: Colors.white,),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
+                  icon: Icon(Icons.description, color: Colors.white),
                   label: Text('Save as DOCX'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
                   onPressed: _downloadAsDOCX,
                 ),
               ],
