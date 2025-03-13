@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notestoaudio/views/capture/capture_notes.dart';
+import 'package:notestoaudio/views/chatbot.dart';
 import 'package:notestoaudio/views/home_page.dart';
 import 'package:notestoaudio/views/record.dart';
 import 'package:notestoaudio/views/summarization.dart';
@@ -63,16 +64,3 @@ class _NavigationScreenState extends State<NavigationScreen> {
   }
 }
 
-class ChatbotPage extends StatelessWidget {
-  const ChatbotPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Ask AI Your Questions',
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
-    );
-  }
-}
