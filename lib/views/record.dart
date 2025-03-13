@@ -155,20 +155,44 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
             ),
             const SizedBox(height: 10),
             ElevatedButton.icon(
-              icon: Icon(Icons.summarize),
+              icon: Icon(Icons.summarize, color: Colors.white,),
               label: Text('Summarize Text'),
+              style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
               onPressed: _summarizeText,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton.icon(
-                  icon: Icon(Icons.picture_as_pdf),
+                  icon: Icon(Icons.picture_as_pdf, color: Colors.white,),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   label: Text('Save as PDF'),
                   onPressed: _downloadAsPDF,
                 ),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.description),
+                  icon: Icon(Icons.description, color: Colors.white,),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   label: Text('Save as DOCX'),
                   onPressed: _downloadAsDOCX,
                 ),

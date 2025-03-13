@@ -88,14 +88,30 @@ class _CaptureNotesPageState extends State<CaptureNotesPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  icon: Icon(Icons.camera_alt),
+                  icon: Icon(Icons.camera_alt, color: Colors.white,),
                   label: Text('Capture'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   onPressed: () => _pickImage(ImageSource.camera),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.upload),
+                  icon: Icon(Icons.upload, color: Colors.white,),
                   label: Text('Upload'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                   onPressed: () => _pickImage(ImageSource.gallery),
                 ),
               ],
