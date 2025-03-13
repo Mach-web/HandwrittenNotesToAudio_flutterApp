@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:notestoaudio/views/capture/capture_notes.dart';
 import 'package:notestoaudio/views/home_page.dart';
+import 'package:notestoaudio/views/record.dart';
+import 'package:notestoaudio/views/summarization.dart';
 
 class NavigationScreen extends StatefulWidget {
   int selectedIndex;
-  NavigationScreen({Key? key, this.selectedIndex = 0}) : super(key: key);
+  NavigationScreen({super.key, this.selectedIndex = 0});
   @override
   _NavigationScreenState createState() => _NavigationScreenState();
 }
@@ -61,31 +63,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
   }
 }
 
-class SummarizationPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Summarize Your Notes',
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
-    );
-  }
-}
-
-class AudioRecordingPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Record and Transcribe Audio',
-        style: Theme.of(context).textTheme.bodyLarge,
-      ),
-    );
-  }
-}
-
 class ChatbotPage extends StatelessWidget {
+  const ChatbotPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(

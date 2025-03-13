@@ -5,7 +5,7 @@ import 'package:notestoaudio/controllers/capture_controller.dart';
 class EditNotesPage extends StatelessWidget {
   final List<File> images;
   final CaptureController _captureController = CaptureController();
-  EditNotesPage({required this.images});
+  EditNotesPage({super.key, required this.images});
 
   @override
   Widget build(BuildContext context) {

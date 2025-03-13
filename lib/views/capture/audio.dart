@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
+  const AudioPlayerScreen({super.key});
+
   @override
   _AudioPlayerScreenState createState() => _AudioPlayerScreenState();
 }
@@ -123,7 +125,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                 ),
                 label: Text('Download Audio', style: TextStyle(fontSize: 17),),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  
                 },
               ),
             ),

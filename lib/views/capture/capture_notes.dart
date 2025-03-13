@@ -7,13 +7,15 @@ import 'package:notestoaudio/themes.dart';
 import 'package:notestoaudio/views/capture/edit_notes.dart';
 
 class CaptureNotesPage extends StatefulWidget {
+  const CaptureNotesPage({super.key});
+
   @override
   _CaptureNotesPageState createState() => _CaptureNotesPageState();
 }
 
 class _CaptureNotesPageState extends State<CaptureNotesPage> {
   final ImagePicker _picker = ImagePicker();
-  List<File> _images = [];
+  final List<File> _images = [];
 
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 5) {
