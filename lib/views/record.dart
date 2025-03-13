@@ -85,12 +85,14 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   }
 
   Future<void> _downloadAsDOCX() async {
-    final docx = await DocxTemplate.fromAsset('assets/template.docx');
+    final f = File("template.docx");
+  final docx = await DocxTemplate.fromBytes(await f.readAsBytes());
+  
     Content content = Content();
     content.add(TextContent("body", _convertedText));
     Directory tempDir = await getApplicationDocumentsDirectory();
     File file = File('${tempDir.path}/notes.docx');
-    await file.writeAsBytes(await docx.generate(content));
+    await file.writeAsBytes(await docx.generate(content) ?? []);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('DOCX saved to ${file.path}')));
   }
 
