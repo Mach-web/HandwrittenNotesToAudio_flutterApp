@@ -32,7 +32,7 @@ class Download {
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('Audio saved to $newPath')));
+    ).showSnackBar(SnackBar(content: Text('Audio saved to $newPath'), duration: Duration(seconds: 5),));
   }
 
   Future<void> downloadAsPDF({
