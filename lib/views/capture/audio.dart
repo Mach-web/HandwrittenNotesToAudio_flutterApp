@@ -90,6 +90,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               onChanged: (value) {
                 _seekAudio(Duration(seconds: value.toInt()));
               },
+              inactiveColor: Colors.grey,  
             ),
             Text(
               "${position.inMinutes}:${position.inSeconds.remainder(60).toString().padLeft(2, '0')} / "

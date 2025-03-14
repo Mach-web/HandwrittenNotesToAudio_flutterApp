@@ -3,23 +3,33 @@ import 'package:docx_template/docx_template.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Download {
   Future<void> saveAudio({
     required BuildContext context,
     required String audioPath,
   }) async {
-    if (audioPath == null) return;
-    Directory docsDir = await getApplicationDocumentsDirectory();
-    String notesToAudioDir = '${docsDir.path}/NotestoAudio';
-    Directory notesDir = Directory(notesToAudioDir);
-    if (!await notesDir.exists()) {
-      await notesDir.create();
+    if (audioPath.isEmpty) return;
+    bool hasPermission = await requestStoragePermission();
+    if (!hasPermission) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Storage permission required to save audio')),
+      );
+      return;
     }
+
+    Directory downloadsDir = Directory('/storage/emulated/0/Download');
+    if (!downloadsDir.existsSync()) {
+      downloadsDir = await getExternalStorageDirectory() ?? Directory('');
+    }
+
     String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-    String newPath = '${notesDir.path}/recorded_audio_$timestamp.aac';
-    File audioFile = File(audioPath!);
+    String newPath = '${downloadsDir.path}/recorded_audio_$timestamp.aac';
+
+    File audioFile = File(audioPath);
     await audioFile.copy(newPath);
+
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('Audio saved to $newPath')));
@@ -94,5 +104,26 @@ class Download {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text('DOCX saved to $docxPath')));
+  }
+
+  Future<bool> requestStoragePermission() async {
+    PermissionStatus status = await Permission.storage.status;
+
+    if (status.isGranted) {
+      return true; // Permission already granted
+    } else if (status.isDenied) {
+      print("Permission denied....");
+      status = await Permission.storage.request();
+      if(!status.isGranted){
+        status = await Permission.manageExternalStorage.request();
+      }
+      return status.isGranted;
+    } else if (status.isPermanentlyDenied) {
+      // Open app settings so the user can enable the permission manually
+      await openAppSettings();
+      return false;
+    }
+
+    return false;
   }
 }

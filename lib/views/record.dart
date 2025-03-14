@@ -2,10 +2,12 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:notestoaudio/download.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:docx_template/docx_template.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AudioRecordingPage extends StatefulWidget {
   const AudioRecordingPage({super.key});
@@ -15,6 +17,7 @@ class AudioRecordingPage extends StatefulWidget {
 }
 
 class _AudioRecordingPageState extends State<AudioRecordingPage> {
+  final Download _download = Download();
   FlutterSoundRecorder? _recorder;
   FlutterSoundPlayer? _player;
   bool _isRecording = false;
@@ -25,6 +28,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   Duration _recordingDuration = Duration.zero;
   Duration _playingPosition = Duration.zero;
   Duration _playingTotalDuration = Duration.zero;
+
   // final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
@@ -36,6 +40,13 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   }
 
   Future<void> _initRecorder() async {
+    PermissionStatus status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Microphone permission required')),
+      );
+      return;
+    }
     await _recorder!.openRecorder();
     await _player!.openPlayer();
 
@@ -119,35 +130,6 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
         },
       );
     }
-  }
-
-  Future<void> _downloadAsPDF() async {
-    PdfDocument document = PdfDocument();
-    document.pages.add().graphics.drawString(
-      _convertedText,
-      PdfStandardFont(PdfFontFamily.helvetica, 12),
-    );
-    List<int> bytes = document.saveSync();
-    document.dispose();
-    Directory tempDir = await getApplicationDocumentsDirectory();
-    File pdfFile = File('${tempDir.path}/notes.pdf');
-    await pdfFile.writeAsBytes(bytes);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('PDF saved to ${pdfFile.path}')));
-  }
-
-  Future<void> _downloadAsDOCX() async {
-    final f = File("template.docx");
-    final docx = await DocxTemplate.fromBytes(await f.readAsBytes());
-    Content content = Content();
-    content.add(TextContent("body", _convertedText));
-    Directory tempDir = await getApplicationDocumentsDirectory();
-    File file = File('${tempDir.path}/notes.docx');
-    await file.writeAsBytes(await docx.generate(content) ?? []);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('DOCX saved to ${file.path}')));
   }
 
   void _summarizeText() {
@@ -277,7 +259,11 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                     ),
                   ),
                   label: Text('Save as PDF'),
-                  onPressed: _downloadAsPDF,
+                  onPressed:
+                      () => _download.downloadAsPDF(
+                        context: context,
+                        convertedText: _convertedText,
+                      ),
                 ),
                 ElevatedButton.icon(
                   icon: Icon(Icons.description, color: Colors.white),
@@ -293,7 +279,11 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  onPressed: _downloadAsDOCX,
+                  onPressed:
+                      () => _download.downloadAsDOCX(
+                        context: context,
+                        convertedText: _convertedText,
+                      ),
                 ),
               ],
             ),
@@ -340,7 +330,11 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
             const SizedBox(width: 20),
             IconButton(
               icon: Icon(Icons.download, size: 35),
-              onPressed: _downloadAsDOCX,
+              onPressed:
+                  () => _download.saveAudio(
+                    context: context,
+                    audioPath: _audioPath ?? '',
+                  ),
             ),
           ],
         ),

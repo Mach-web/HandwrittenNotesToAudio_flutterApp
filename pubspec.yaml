@@ -45,6 +45,7 @@ dependencies:
   speech_to_text: ^7.0.0
   docx_template: ^0.4.0
   share_plus: ^10.1.4
+  permission_handler: ^11.4.0
 
 dev_dependencies:
   flutter_test:
