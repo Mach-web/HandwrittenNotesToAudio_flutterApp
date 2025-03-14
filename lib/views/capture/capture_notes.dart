@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:notestoaudio/themes.dart';
 import 'package:notestoaudio/views/capture/edit_notes.dart';
 
 class CaptureNotesPage extends StatefulWidget {

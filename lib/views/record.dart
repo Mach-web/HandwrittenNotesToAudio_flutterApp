@@ -7,6 +7,8 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:docx_template/docx_template.dart';
 
 class AudioRecordingPage extends StatefulWidget {
+  const AudioRecordingPage({super.key});
+
   @override
   _AudioRecordingPageState createState() => _AudioRecordingPageState();
 }
@@ -17,7 +19,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   bool _isRecording = false;
   bool _isPlaying = false;
   String? _audioPath;
-  stt.SpeechToText _speechToText = stt.SpeechToText();
+  final stt.SpeechToText _speechToText = stt.SpeechToText();
   String _convertedText = "";
   Duration _recordingDuration = Duration.zero;
   Duration _playingPosition = Duration.zero;
@@ -35,10 +37,20 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     await _recorder!.openRecorder();
     await _player!.openPlayer();
 
+    await _recorder!.setSubscriptionDuration(
+      Duration(milliseconds: 100), // 100 ms
+    );
+    await _player!.setSubscriptionDuration(
+      Duration(milliseconds: 100), // 100 ms
+    );
+
+    print('Recording started');
     _recorder!.onProgress!.listen((e) {
+      print('Recording started....');
       if (_isRecording) {
         setState(() {
           _recordingDuration = e.duration;
+          print("Recording duration: $_recordingDuration");
         });
       }
     });
@@ -139,7 +151,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     int summaryLength = (sentences.length * 0.3).toInt();
     summaryLength = summaryLength > 0 ? summaryLength : 1;
     setState(() {
-      _convertedText = sentences.take(summaryLength).join('. ') + '.';
+      _convertedText = '${sentences.take(summaryLength).join('. ')}.';
     });
   }
 
@@ -162,6 +174,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Record & Convert Audio'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
             icon: Icon(Icons.mic),
@@ -257,7 +270,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton.icon(
-                  icon: Icon(Icons.picture_as_pdf, color: Colors.white,),
+                  icon: Icon(Icons.picture_as_pdf, color: Colors.white),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ChatbotPage extends StatefulWidget {
+  const ChatbotPage({super.key});
+
   @override
   _ChatbotPageState createState() => _ChatbotPageState();
 }
@@ -11,7 +12,8 @@ class ChatbotPage extends StatefulWidget {
 class _ChatbotPageState extends State<ChatbotPage> {
   final TextEditingController _messageController = TextEditingController();
   final List<Map<String, String>> _messages = [];
-  final String apiUrl = "https://api.openai.com/v1/chat/completions"; // Example OpenAI API
+  final String apiUrl =
+      "https://api.openai.com/v1/chat/completions"; // Example OpenAI API
   final String apiKey = "YOUR_OPENAI_API_KEY"; // Replace with your API key
 
   Future<void> sendMessage(String userMessage) async {
@@ -30,8 +32,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
           "model": "gpt-3.5-turbo",
           "messages": [
             {"role": "system", "content": "You are a helpful chatbot."},
-            {"role": "user", "content": userMessage}
-          ]
+            {"role": "user", "content": userMessage},
+          ],
         }),
       );
 
@@ -44,7 +46,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
         });
       } else {
         setState(() {
-          _messages.add({"sender": "bot", "message": "Error fetching response!"});
+          _messages.add({
+            "sender": "bot",
+            "message": "Error fetching response!",
+          });
         });
       }
     } catch (e) {
@@ -57,7 +62,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chatbot")),
+      appBar: AppBar(
+        title: Text("Chatbot"),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
       body: Column(
         children: [
           Expanded(
@@ -69,7 +77,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
                 bool isUser = message["sender"] == "user";
 
                 return Align(
-                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment:
+                      isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     padding: EdgeInsets.all(12),
                     margin: EdgeInsets.symmetric(vertical: 5),
@@ -79,7 +88,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
                     ),
                     child: Text(
                       message["message"]!,
-                      style: TextStyle(color: isUser ? Colors.white : Colors.black),
+                      style: TextStyle(
+                        color: isUser ? Colors.white : Colors.black,
+                      ),
                     ),
                   ),
                 );
@@ -97,7 +108,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.blue),
+                  icon: Icon(
+                    Icons.send,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: () {
                     if (_messageController.text.isNotEmpty) {
                       sendMessage(_messageController.text);

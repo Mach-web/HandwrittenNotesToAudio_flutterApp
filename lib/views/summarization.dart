@@ -5,6 +5,8 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 
 class SummarizationPage extends StatefulWidget {
+  const SummarizationPage({super.key});
+
   @override
   _SummarizationPageState createState() => _SummarizationPageState();
 }
@@ -12,7 +14,7 @@ class SummarizationPage extends StatefulWidget {
 class _SummarizationPageState extends State<SummarizationPage> {
   File? _selectedFile;
   String _extractedText = "";
-  TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
   String _summary = "";
 
   Future<void> _pickFile() async {
@@ -66,7 +68,7 @@ class _SummarizationPageState extends State<SummarizationPage> {
     summaryLength = summaryLength > 0 ? summaryLength : 1;
 
     setState(() {
-      _summary = sentences.take(summaryLength).join('. ') + '.';
+      _summary = '${sentences.take(summaryLength).join('. ')}.';
     });
   }
 
