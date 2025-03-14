@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -24,6 +25,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   Duration _recordingDuration = Duration.zero;
   Duration _playingPosition = Duration.zero;
   Duration _playingTotalDuration = Duration.zero;
+  // final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -44,13 +46,10 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
       Duration(milliseconds: 100), // 100 ms
     );
 
-    print('Recording started');
     _recorder!.onProgress!.listen((e) {
-      print('Recording started....');
       if (_isRecording) {
         setState(() {
           _recordingDuration = e.duration;
-          print("Recording duration: $_recordingDuration");
         });
       }
     });
@@ -94,6 +93,11 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
       },
     );
     setState(() => _isPlaying = true);
+  }
+
+  void _pauseAudio() async {
+    await _player!.pausePlayer();
+    setState(() => _isPlaying = false);
   }
 
   Future<void> _stopAudio() async {
@@ -196,38 +200,28 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Text(
-              _isRecording
-                  ? 'Recording: ${_formatDuration(_recordingDuration)}'
-                  : _isPlaying
-                  ? 'Playing: ${_formatDuration(_playingPosition)} / ${_formatDuration(_playingTotalDuration)}'
-                  : 'Ready',
-              style: TextStyle(fontSize: 16),
-            ),
+            _isRecording
+                ? Text(
+                  'Recording: ${_formatDuration(_recordingDuration)}',
+                  style: TextStyle(fontSize: 16),
+                )
+                : _audioPath != null
+                ? _playerWidget()
+                : Text('Ready', style: TextStyle(fontSize: 16)),
+            // Text(
+            //   _isRecording
+            //       ? 'Recording: ${_formatDuration(_recordingDuration)}'
+            //       : _isPlaying
+            //       ? 'Playing: ${_formatDuration(_playingPosition)} / ${_formatDuration(_playingTotalDuration)}'
+            //       : 'Ready',
+            //   style: TextStyle(fontSize: 16),
+            // ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: Icon(_isRecording ? Icons.stop : Icons.mic),
               label: Text(_isRecording ? 'Stop Recording' : 'Start Recording'),
               onPressed: _isRecording ? _stopRecording : _startRecording,
             ),
-            const SizedBox(height: 10),
-            if (_audioPath != null)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton.icon(
-                    icon: Icon(_isPlaying ? Icons.stop : Icons.play_arrow),
-                    label: Text(_isPlaying ? 'Stop Playback' : 'Play Audio'),
-                    onPressed: _isPlaying ? _stopAudio : _playAudio,
-                  ),
-                  const SizedBox(width: 10),
-                  IconButton(
-                    icon: Icon(Icons.download),
-                    onPressed: _downloadAsPDF, // Changed from share to download
-                    tooltip: 'Download PDF',
-                  ),
-                ],
-              ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               icon: Icon(Icons.text_fields),
@@ -306,6 +300,51 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
           ],
         ),
       ),
+    );
+  }
+
+  void _seekAudio(Duration newPosition) async {
+    await _player!.seekToPlayer(newPosition);
+  }
+
+  Widget _playerWidget() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Slider(
+          min: 0,
+          max: _playingTotalDuration.inSeconds.toDouble(),
+          value: _playingPosition.inSeconds.toDouble(),
+          onChanged: (value) {
+            _seekAudio(Duration(seconds: value.toInt()));
+          },
+          inactiveColor: Colors.grey,
+        ),
+        Text(
+          "${_formatDuration(_playingPosition)} / ${_formatDuration(_playingTotalDuration)}",
+        ),
+        const SizedBox(height: 5),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(
+                _isPlaying
+                    ? Icons.pause_circle_filled
+                    : Icons.play_circle_filled,
+                size: 35,
+              ),
+              onPressed: _isPlaying ? _pauseAudio : _playAudio,
+            ),
+            const SizedBox(width: 20),
+            IconButton(
+              icon: Icon(Icons.download, size: 35),
+              onPressed: _downloadAsDOCX,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
