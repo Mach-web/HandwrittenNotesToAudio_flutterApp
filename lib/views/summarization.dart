@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 
@@ -75,7 +76,16 @@ class _SummarizationPageState extends State<SummarizationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Summarize Your Notes'), backgroundColor: Theme.of(context).colorScheme.primary,),
+      appBar: AppBar(
+        title: Text('Summarize Your Notes'), 
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          IconButton(onPressed: (){
+            Get.toNamed('/random');
+          },
+          icon: Icon(Icons.bubble_chart_outlined))
+        ],
+        ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

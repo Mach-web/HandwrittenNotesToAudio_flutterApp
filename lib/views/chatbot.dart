@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -65,6 +66,12 @@ class _ChatbotPageState extends State<ChatbotPage> {
       appBar: AppBar(
         title: Text("Chatbot"),
         backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          IconButton(onPressed: (){
+            Get.toNamed('/random');
+          },
+          icon: Icon(Icons.bubble_chart_outlined))
+        ],
       ),
       body: Column(
         children: [
