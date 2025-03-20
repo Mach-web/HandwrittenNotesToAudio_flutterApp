@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:get/get.dart';
+import 'package:notestoaudio/Machine_learning/text_to_audio.dart';
+import 'package:notestoaudio/controllers/capture_controller.dart';
+
 
 class AudioPlayerScreen extends StatefulWidget {
   const AudioPlayerScreen({super.key});
@@ -10,14 +14,17 @@ class AudioPlayerScreen extends StatefulWidget {
 
 class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final CaptureController _captureController = Get.put(CaptureController());
+  final TTSHelper _ttsHelper = TTSHelper();
   bool isPlaying = false;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
+  late String? _filePath;
 
   @override
   void initState() {
     super.initState();
-
+    _generateAudio();
     _audioPlayer.onPositionChanged.listen((p) {
       setState(() => position = p);
     });
@@ -34,11 +41,21 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     });
   }
 
+  void _generateAudio()async{
+     _filePath = await _ttsHelper.generateAudioFromText(_captureController.notesController.text);
+  }
+
+
+
   void _playAudio() async {
-    // String audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; // Replace with your audio file
+    if(_filePath == null){
+      Get.snackbar("Error", "Wait for text to audio conversion to finish", backgroundColor: Colors.black, colorText: Colors.white, duration: Duration(seconds: 5), isDismissible: true);
+      return;
+    }
     await _audioPlayer.play(
-      AssetSource(
-        "audio/audio1.mp3"), 
+      DeviceFileSource(
+        _filePath!
+      )
       // UrlSource(audioUrl)
       );
     setState(() => isPlaying = true);
