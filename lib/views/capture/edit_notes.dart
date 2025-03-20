@@ -1,10 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:notestoaudio/controllers/capture_controller.dart';
 
 class EditNotesPage extends StatelessWidget {
   final List<File> images;
-  final CaptureController _captureController = CaptureController();
+  final CaptureController _captureController = Get.put(CaptureController());
   EditNotesPage({super.key, required this.images});
 
   @override

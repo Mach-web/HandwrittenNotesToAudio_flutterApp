@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:notestoaudio/Machine_learning/text_recognition.dart';
 import 'package:notestoaudio/views/capture/edit_notes.dart';
 import 'package:notestoaudio/views/random_buttons.dart';
 
@@ -16,6 +17,7 @@ class CaptureNotesPage extends StatefulWidget {
 class _CaptureNotesPageState extends State<CaptureNotesPage> {
   final ImagePicker _picker = ImagePicker();
   final List<File> _images = [];
+  final TextRecognition _textRecognition = TextRecognition();
 
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 5) {
@@ -37,6 +39,7 @@ class _CaptureNotesPageState extends State<CaptureNotesPage> {
   }
 
   void _navigateToEditNotes() {
+    _textRecognition.extractTextFromImages(_images);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EditNotesPage(images: _images)),
