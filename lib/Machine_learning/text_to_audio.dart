@@ -16,24 +16,17 @@ class TTSHelper {
       await _flutterTts.setVolume(1.0);
 
       // Get the directory to save the audio file
-      Directory tempDir = await getTemporaryDirectory();
+      Directory tempDir = await getDownloadsDirectory() ?? await getTemporaryDirectory();
       String filePath = '${tempDir.path}/tts_audio.wav';
 
       // Generate audio file
-      await _flutterTts.synthesizeToFile(text, filePath);
-
+      await _flutterTts.awaitSynthCompletion(true);
+      await _flutterTts.synthesizeToFile(text, filePath, true);
+  
       return filePath;
     } catch (e) {
       print("Error generating TTS audio: $e");
       return null;
-    }
-  }
-
-  Future<void> playAudio(String filePath) async {
-    try {
-      await _audioPlayer.play(DeviceFileSource(filePath));
-    } catch (e) {
-      print("Error playing audio: $e");
     }
   }
 }

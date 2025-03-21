@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:notestoaudio/Machine_learning/text_to_audio.dart';
 import 'package:notestoaudio/controllers/capture_controller.dart';
 
-
 class AudioPlayerScreen extends StatefulWidget {
   const AudioPlayerScreen({super.key});
 
@@ -41,23 +40,28 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     });
   }
 
-  void _generateAudio()async{
-     _filePath = await _ttsHelper.generateAudioFromText(_captureController.notesController.text);
+  void _generateAudio() async {
+    _filePath = await _ttsHelper.generateAudioFromText(
+      _captureController.notesController.text,
+    );
   }
 
-
-
   void _playAudio() async {
-    if(_filePath == null){
-      Get.snackbar("Error", "Wait for text to audio conversion to finish", backgroundColor: Colors.black, colorText: Colors.white, duration: Duration(seconds: 5), isDismissible: true);
+    if (_filePath == null) {
+      Get.snackbar(
+        "Error",
+        "Wait for text to audio conversion to finish",
+        backgroundColor: Colors.black,
+        colorText: Colors.white,
+        duration: Duration(seconds: 5),
+        isDismissible: true,
+      );
       return;
     }
+    print("Audio path: $_filePath");
     await _audioPlayer.play(
-      DeviceFileSource(
-        _filePath!
-      )
-      // UrlSource(audioUrl)
-      );
+      DeviceFileSource(_filePath!, mimeType: "wav"),
+    );
     setState(() => isPlaying = true);
   }
 
@@ -107,7 +111,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               onChanged: (value) {
                 _seekAudio(Duration(seconds: value.toInt()));
               },
-              inactiveColor: Colors.grey,  
+              inactiveColor: Colors.grey,
             ),
             Text(
               "${position.inMinutes}:${position.inSeconds.remainder(60).toString().padLeft(2, '0')} / "
@@ -118,7 +122,12 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  icon: Icon(isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled, size: 50),
+                  icon: Icon(
+                    isPlaying
+                        ? Icons.pause_circle_filled
+                        : Icons.play_circle_filled,
+                    size: 50,
+                  ),
                   onPressed: isPlaying ? _pauseAudio : _playAudio,
                 ),
                 const SizedBox(width: 20),
@@ -141,10 +150,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                 ),
-                label: Text('Download Audio', style: TextStyle(fontSize: 17),),
-                onPressed: () {
-                  
-                },
+                label: Text('Download Audio', style: TextStyle(fontSize: 17)),
+                onPressed: () {},
               ),
             ),
           ],
