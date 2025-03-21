@@ -15,12 +15,12 @@ class SummarizationPage extends StatefulWidget {
 
 class _SummarizationPageState extends State<SummarizationPage> {
   final DocsPdf _docsPdf = DocsPdf();
-  
+  File? selectedFile;
   final TextEditingController _textController = TextEditingController();
   String _summary = "";
 
   void _summarizeText() {
-    String textToSummarize = _docsPdf.selectedFile != null ? _docsPdf.extractedText.text : _textController.text;
+    String textToSummarize = selectedFile != null ? _docsPdf.extractedText.text : _textController.text;
     if (textToSummarize.isEmpty) {
       setState(() {
         _summary = "No text provided to summarize.";
@@ -57,11 +57,17 @@ class _SummarizationPageState extends State<SummarizationPage> {
             ElevatedButton.icon(
               icon: Icon(Icons.upload_file),
               label: Text('Upload PDF/DOCX'),
-              onPressed: _docsPdf.pickFile,
+              onPressed: ()async{
+                File? _file = await _docsPdf.pickFile();
+                setState((){
+                  selectedFile = _file;
+                });
+              }
+              
             ),
             const SizedBox(height: 10),
             Text(
-              _docsPdf.selectedFile != null ? 'File Selected: ${_docsPdf.selectedFile!.path.split('/').last}' : 'No file selected',
+              selectedFile != null ? 'File Selected: ${selectedFile!.path.split('/').last}' : 'No file selected',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
