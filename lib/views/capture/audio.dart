@@ -3,6 +3,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
 import 'package:notestoaudio/Machine_learning/text_to_audio.dart';
 import 'package:notestoaudio/controllers/capture_controller.dart';
+import 'package:notestoaudio/download.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
   const AudioPlayerScreen({super.key});
@@ -13,12 +14,13 @@ class AudioPlayerScreen extends StatefulWidget {
 
 class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final Download _download = Download();
   final CaptureController _captureController = Get.put(CaptureController());
   final TTSHelper _ttsHelper = TTSHelper();
   bool isPlaying = false;
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
-  late String? _filePath;
+  String? _filePath;
 
   @override
   void initState() {
@@ -49,7 +51,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   void _playAudio() async {
     if (_filePath == null) {
       Get.snackbar(
-        "Error",
+        "Converting...",
         "Wait for text to audio conversion to finish",
         backgroundColor: Colors.black,
         colorText: Colors.white,
@@ -151,7 +153,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                   ),
                 ),
                 label: Text('Download Audio', style: TextStyle(fontSize: 17)),
-                onPressed: () {},
+                onPressed: () {
+                  if(_filePath == null){
+                  _download.saveAudio(context: context, audioPath: _filePath!);
+                  }
+                },
               ),
             ),
           ],
