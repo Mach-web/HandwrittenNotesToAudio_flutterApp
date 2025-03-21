@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
 import 'package:notestoaudio/Machine_learning/text_to_audio.dart';
-import 'package:notestoaudio/controllers/capture_controller.dart';
+import 'package:notestoaudio/controllers/text_controller.dart';
 import 'package:notestoaudio/download.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
@@ -61,9 +61,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       return;
     }
     print("Audio path: $_filePath");
-    await _audioPlayer.play(
-      DeviceFileSource(_filePath!, mimeType: "wav"),
-    );
+    await _audioPlayer.play(DeviceFileSource(_filePath!, mimeType: "wav"));
     setState(() => isPlaying = true);
   }
 
@@ -154,8 +152,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                 ),
                 label: Text('Download Audio', style: TextStyle(fontSize: 17)),
                 onPressed: () {
-                  if(_filePath == null){
-                  _download.saveAudio(context: context, audioPath: _filePath!);
+                  if (_filePath == null) {
+                    _download.saveAudio(
+                      context: context,
+                      audioPath: _filePath!,
+                    );
                   }
                 },
               ),

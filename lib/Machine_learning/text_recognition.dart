@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:notestoaudio/controllers/capture_controller.dart';
+import 'package:notestoaudio/controllers/text_controller.dart';
 
 class TextRecognition {
   Future<List<String>> extractTextFromImages(List<File> images) async {

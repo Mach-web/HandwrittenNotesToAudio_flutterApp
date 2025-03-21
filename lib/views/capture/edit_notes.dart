@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:notestoaudio/controllers/capture_controller.dart';
+import 'package:notestoaudio/controllers/text_controller.dart';
 
 class EditNotesPage extends StatelessWidget {
   final List<File> images;

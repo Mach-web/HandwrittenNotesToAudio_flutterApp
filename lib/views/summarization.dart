@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:notestoaudio/Machine_learning/docs_pdf.dart';
 
 class SummarizationPage extends StatefulWidget {
   const SummarizationPage({super.key});
@@ -13,50 +14,13 @@ class SummarizationPage extends StatefulWidget {
 }
 
 class _SummarizationPageState extends State<SummarizationPage> {
-  File? _selectedFile;
-  String _extractedText = "";
+  final DocsPdf _docsPdf = DocsPdf();
+  
   final TextEditingController _textController = TextEditingController();
   String _summary = "";
 
-  Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'docx'],
-    );
-
-    if (result != null) {
-      setState(() {
-        _selectedFile = File(result.files.single.path!);
-      });
-
-      if (_selectedFile!.path.endsWith('.pdf')) {
-        await _extractTextFromPdf(_selectedFile!);
-      } else {
-        setState(() {
-          _extractedText = "Text extraction for DOCX is not yet implemented.";
-        });
-      }
-    }
-  }
-
-  Future<void> _extractTextFromPdf(File file) async {
-    try {
-      PdfDocument document = PdfDocument(inputBytes: await file.readAsBytes());
-      String text = PdfTextExtractor(document).extractText();
-      document.dispose();
-
-      setState(() {
-        _extractedText = text;
-      });
-    } catch (e) {
-      setState(() {
-        _extractedText = "Failed to extract text from PDF.";
-      });
-    }
-  }
-
   void _summarizeText() {
-    String textToSummarize = _selectedFile != null ? _extractedText : _textController.text;
+    String textToSummarize = _docsPdf.selectedFile != null ? _docsPdf.extractedText.text : _textController.text;
     if (textToSummarize.isEmpty) {
       setState(() {
         _summary = "No text provided to summarize.";
@@ -93,11 +57,11 @@ class _SummarizationPageState extends State<SummarizationPage> {
             ElevatedButton.icon(
               icon: Icon(Icons.upload_file),
               label: Text('Upload PDF/DOCX'),
-              onPressed: _pickFile,
+              onPressed: _docsPdf.pickFile,
             ),
             const SizedBox(height: 10),
             Text(
-              _selectedFile != null ? 'File Selected: ${_selectedFile!.path.split('/').last}' : 'No file selected',
+              _docsPdf.selectedFile != null ? 'File Selected: ${_docsPdf.selectedFile!.path.split('/').last}' : 'No file selected',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
