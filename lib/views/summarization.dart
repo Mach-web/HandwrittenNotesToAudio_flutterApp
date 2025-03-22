@@ -83,7 +83,7 @@ class _SummarizationPageState extends State<SummarizationPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _summarizeText,
+              onPressed: _docsPdf.summarizeText,
               style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
@@ -101,7 +101,7 @@ class _SummarizationPageState extends State<SummarizationPage> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                child: HtmlWidget(_summary.isNotEmpty ? _summary : 'No summary generated yet.'),
+                child: HtmlWidget(_docsPdf.summary.text),
               ),
             ),
           ],
