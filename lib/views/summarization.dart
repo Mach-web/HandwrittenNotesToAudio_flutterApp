@@ -16,11 +16,10 @@ class SummarizationPage extends StatefulWidget {
 class _SummarizationPageState extends State<SummarizationPage> {
   final DocsPdf _docsPdf = DocsPdf();
   File? selectedFile;
-  final TextEditingController _textController = TextEditingController();
   String _summary = "";
 
   void _summarizeText() {
-    String textToSummarize = selectedFile != null ? _docsPdf.extractedText.text : _textController.text;
+    String textToSummarize = selectedFile != null ? _docsPdf.extractedText.text : _docsPdf.textController.text;
     if (textToSummarize.isEmpty) {
       setState(() {
         _summary = "No text provided to summarize.";
@@ -62,8 +61,7 @@ class _SummarizationPageState extends State<SummarizationPage> {
                 setState((){
                   selectedFile = _file;
                 });
-              }
-              
+              }     
             ),
             const SizedBox(height: 10),
             Text(
@@ -73,7 +71,7 @@ class _SummarizationPageState extends State<SummarizationPage> {
             ),
             const SizedBox(height: 20),
             TextField(
-              controller: _textController,
+              controller: _docsPdf.textController,
               maxLines: 5,
               decoration: InputDecoration(
                 hintText: 'Or paste your notes here...',
