@@ -19,6 +19,9 @@ class _SummarizationPageState extends State<SummarizationPage> {
   String _summary = "";
 
   void _summarizeText() {
+    if(selectedFile != null){
+      _docsPdf.extractTextFromPdf(selectedFile!);
+    }
     String textToSummarize = selectedFile != null ? _docsPdf.extractedText.text : _docsPdf.textController.text;
     if (textToSummarize.isEmpty) {
       setState(() {
