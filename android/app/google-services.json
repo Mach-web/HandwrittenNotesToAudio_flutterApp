@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "709578819715",
+    "project_id": "notes-to-audio",
+    "storage_bucket": "notes-to-audio.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:709578819715:android:bdbc77407fce9799fe33b6",
+        "android_client_info": {
+          "package_name": "com.notestoaudio.notestoaudio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGSz_pwqOqOY7t9nMXW1_29wXSFiR1yDw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

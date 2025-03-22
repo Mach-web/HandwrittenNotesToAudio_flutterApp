@@ -1,4 +1,4 @@
-package com.example.notestoaudio
+package com.notestoaudio.notestoaudio
 
 import io.flutter.embedding.android.FlutterActivity
 
