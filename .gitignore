@@ -2,7 +2,7 @@
 /lib/Machine_learning
 /lib/firebase_options.dart
 /android/app/google-services.json
-firebase.json
+/firebase.json
 # Miscellaneous
 *.class
 *.log
