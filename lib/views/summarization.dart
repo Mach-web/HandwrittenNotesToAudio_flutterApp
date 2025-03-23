@@ -83,7 +83,8 @@ class _SummarizationPageState extends State<SummarizationPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _docsPdf.summarizeText,
+              onPressed: 
+                () => selectedFile != null ? _docsPdf.summarizeText(selectedFile: selectedFile) : _docsPdf.summarizeText(),
               style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,

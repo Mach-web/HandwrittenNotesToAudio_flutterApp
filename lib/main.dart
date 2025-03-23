@@ -11,10 +11,7 @@ void main() async {
   await Firebase.initializeApp(
   options: DefaultFirebaseOptions.currentPlatform,
 );
-// Initialize the Vertex AI service and the generative model
-// Specify a model that supports your use case
-final model =
-      FirebaseVertexAI.instance.generativeModel(model: 'gemini-2.0-flash');
+
   runApp(const MyApp());
 }
 
