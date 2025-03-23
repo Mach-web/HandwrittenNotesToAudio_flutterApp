@@ -24,7 +24,7 @@ final model =
     });
 
     try {
-      final prompt = [Content.text('Write a story about a magic backpack.')];
+      final prompt = [Content.text(userMessage)];
       final response = await model.generateContent(prompt);
 
       if (response.text != null) {
