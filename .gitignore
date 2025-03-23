@@ -1,5 +1,6 @@
 /assets/audio/
 /lib/Machine_learning
+/lib/firebase_options.dart
 # Miscellaneous
 *.class
 *.log
@@ -45,4 +46,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-/android/app/
+/android/app
