@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 
 class ChatbotPage extends StatefulWidget {
   const ChatbotPage({super.key});
@@ -12,10 +13,10 @@ class ChatbotPage extends StatefulWidget {
 
 class _ChatbotPageState extends State<ChatbotPage> {
   final TextEditingController _messageController = TextEditingController();
+
+final model =
+      FirebaseVertexAI.instance.generativeModel(model: 'gemini-2.0-flash');
   final List<Map<String, String>> _messages = [];
-  final String apiUrl =
-      "https://api.openai.com/v1/chat/completions"; // Example OpenAI API
-  final String apiKey = "YOUR_OPENAI_API_KEY"; // Replace with your API key
 
   Future<void> sendMessage(String userMessage) async {
     setState(() {
@@ -23,24 +24,12 @@ class _ChatbotPageState extends State<ChatbotPage> {
     });
 
     try {
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          "Authorization": "Bearer $apiKey",
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode({
-          "model": "gpt-3.5-turbo",
-          "messages": [
-            {"role": "system", "content": "You are a helpful chatbot."},
-            {"role": "user", "content": userMessage},
-          ],
-        }),
-      );
+      final prompt = [Content.text('Write a story about a magic backpack.')];
+      final response = await model.generateContent(prompt);
 
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        String botResponse = data["choices"][0]["message"]["content"];
+      if (response.text != null) {
+        
+        String botResponse = response.text!;
 
         setState(() {
           _messages.add({"sender": "bot", "message": botResponse});
