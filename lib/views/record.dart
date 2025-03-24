@@ -3,7 +3,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:notestoaudio/download.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:docx_template/docx_template.dart';
@@ -23,11 +24,15 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   bool _isRecording = false;
   bool _isPlaying = false;
   String? _audioPath;
-  final stt.SpeechToText _speechToText = stt.SpeechToText();
-  String _convertedText = "";
+  // String _convertedText = "";
   Duration _recordingDuration = Duration.zero;
   Duration _playingPosition = Duration.zero;
   Duration _playingTotalDuration = Duration.zero;
+
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _lastWords = "";
+  final TextEditingController _textController = TextEditingController();
 
   // final AudioPlayer _audioPlayer = AudioPlayer();
 
@@ -39,16 +44,41 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     _initRecorder();
   }
 
+  void _startListening() async {
+    await _speechToText.listen(
+      onResult: _onSpeechResult,
+      listenFor: const Duration(seconds: 30),
+      localeId: "en_En",
+      cancelOnError: false,
+      partialResults: false,
+      listenMode: ListenMode.confirmation,
+    );
+    setState(() {});
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      _lastWords = "$_lastWords${result.recognizedWords} ";
+      _textController.text = _lastWords;
+    });
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
   Future<void> _initRecorder() async {
     PermissionStatus status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Microphone permission required')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Microphone permission required')));
       return;
     }
     await _recorder!.openRecorder();
     await _player!.openPlayer();
+    _speechEnabled = await _speechToText.initialize();
 
     await _recorder!.setSubscriptionDuration(
       Duration(milliseconds: 100), // 100 ms
@@ -119,28 +149,6 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     });
   }
 
-  Future<void> _convertSpeechToText() async {
-    bool available = await _speechToText.initialize();
-    if (available && _audioPath != null) {
-      await _speechToText.listen(
-        onResult: (result) {
-          setState(() {
-            _convertedText = result.recognizedWords;
-          });
-        },
-      );
-    }
-  }
-
-  void _summarizeText() {
-    List<String> sentences = _convertedText.split('. ');
-    int summaryLength = (sentences.length * 0.3).toInt();
-    summaryLength = summaryLength > 0 ? summaryLength : 1;
-    setState(() {
-      _convertedText = '${sentences.take(summaryLength).join('. ')}.';
-    });
-  }
-
   String _formatDuration(Duration d) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes = twoDigits(d.inMinutes.remainder(60));
@@ -204,12 +212,12 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
               label: Text(_isRecording ? 'Stop Recording' : 'Start Recording'),
               onPressed: _isRecording ? _stopRecording : _startRecording,
             ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: Icon(Icons.text_fields),
-              label: Text('Convert to Text'),
-              onPressed: _convertSpeechToText,
-            ),
+            // const SizedBox(height: 20),
+            // ElevatedButton.icon(
+            //   icon: Icon(Icons.text_fields),
+            //   label: Text('Convert to Text'),
+            //   onPressed: _convertSpeechToText,
+            // ),
             const SizedBox(height: 20),
             Text(
               'Converted Text:',
@@ -218,8 +226,8 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
             Expanded(
               child: SingleChildScrollView(
                 child: Text(
-                  _convertedText.isNotEmpty
-                      ? _convertedText
+                  _textController.text.isNotEmpty
+                      ? _textController.text
                       : 'No text converted yet.',
                   style: TextStyle(fontSize: 16),
                 ),
@@ -240,7 +248,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              onPressed: _summarizeText,
+              onPressed: (){},
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -262,7 +270,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                   onPressed:
                       () => _download.downloadAsPDF(
                         context: context,
-                        convertedText: _convertedText,
+                        convertedText: _textController.text,
                       ),
                 ),
                 ElevatedButton.icon(
@@ -282,7 +290,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                   onPressed:
                       () => _download.downloadAsDOCX(
                         context: context,
-                        convertedText: _convertedText,
+                        convertedText: _textController.text,
                       ),
                 ),
               ],
