@@ -41,26 +41,45 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     super.initState();
     _recorder = FlutterSoundRecorder();
     _player = FlutterSoundPlayer();
+    _initSpeech();
     _initRecorder();
   }
 
-  void _startListening() async {
-    await _speechToText.listen(
-      onResult: _onSpeechResult,
-      listenFor: const Duration(seconds: 30),
-      localeId: "en_En",
-      cancelOnError: false,
-      partialResults: false,
-      listenMode: ListenMode.confirmation,
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize(
+      onError: (error) {
+        print("Speech initialization error: $error");
+      },
     );
+    onStatus:
+    (status) {
+      print("Speech status: $status");
+    };
+    print("Speech enabled: $_speechEnabled");
     setState(() {});
   }
 
+  void _startListening() {
+    _speechToText.listen(
+    onResult: _onSpeechResult,
+    localeId: "en_US", // Change to match your target language
+    listenFor: Duration(seconds: 10), // Extend timeout
+    cancelOnError: false,
+    onSoundLevelChange: (level) {
+      print("Sound level: $level");
+    },);
+    setState(() {});
+    print("Started Res43ts");
+  }
+
   void _onSpeechResult(SpeechRecognitionResult result) {
+    print("Recognized words: ${result.recognizedWords}");
+    print("Started Res43ts");
     setState(() {
-      _lastWords = "$_lastWords${result.recognizedWords} ";
+      _lastWords = "$_lastWords ${result.recognizedWords} ";
       _textController.text = _lastWords;
     });
+    print("Sppech translated: ${_textController.text}");
   }
 
   void _stopListening() async {
@@ -70,15 +89,15 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
 
   Future<void> _initRecorder() async {
     PermissionStatus status = await Permission.microphone.request();
+    PermissionStatus speechStatus = await Permission.speech.request();
     if (status != PermissionStatus.granted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Microphone permission required')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Microphone and speech permission required')),
+      );
       return;
     }
     await _recorder!.openRecorder();
     await _player!.openPlayer();
-    _speechEnabled = await _speechToText.initialize();
 
     await _recorder!.setSubscriptionDuration(
       Duration(milliseconds: 100), // 100 ms
@@ -110,11 +129,13 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     Directory tempDir = await getApplicationDocumentsDirectory();
     _audioPath = '${tempDir.path}/recorded_audio.aac';
     await _recorder!.startRecorder(toFile: _audioPath);
+    _startListening();
     setState(() => _isRecording = true);
   }
 
   Future<void> _stopRecording() async {
     await _recorder!.stopRecorder();
+    _stopListening();
     setState(() {
       _isRecording = false;
       _recordingDuration = Duration.zero;
@@ -176,6 +197,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                 _isRecording
                     ? Colors.red
                     : null, // Red when recording, default otherwise
+            tooltip: 'listen',
             onPressed: () {
               if (_isRecording) {
                 _stopRecording();
@@ -248,7 +270,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              onPressed: (){},
+              onPressed: () {},
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
