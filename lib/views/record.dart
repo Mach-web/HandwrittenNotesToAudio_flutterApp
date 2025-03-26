@@ -1,10 +1,7 @@
 import 'dart:io';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:notestoaudio/download.dart';
-import 'package:speech_to_text/speech_recognition_result.dart';
-import 'package:speech_to_text/speech_to_text.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:docx_template/docx_template.dart';
@@ -28,63 +25,14 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   Duration _recordingDuration = Duration.zero;
   Duration _playingPosition = Duration.zero;
   Duration _playingTotalDuration = Duration.zero;
-
-  final SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
-  String _lastWords = "";
   final TextEditingController _textController = TextEditingController();
-
-  // final AudioPlayer _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
     _recorder = FlutterSoundRecorder();
     _player = FlutterSoundPlayer();
-    _initSpeech();
     _initRecorder();
-  }
-
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize(
-      onError: (error) {
-        print("Speech initialization error: $error");
-      },
-    );
-    onStatus:
-    (status) {
-      print("Speech status: $status");
-    };
-    print("Speech enabled: $_speechEnabled");
-    setState(() {});
-  }
-
-  void _startListening() {
-    _speechToText.listen(
-    onResult: _onSpeechResult,
-    localeId: "en_US", // Change to match your target language
-    listenFor: Duration(seconds: 10), // Extend timeout
-    cancelOnError: false,
-    onSoundLevelChange: (level) {
-      print("Sound level: $level");
-    },);
-    setState(() {});
-    print("Started Res43ts");
-  }
-
-  void _onSpeechResult(SpeechRecognitionResult result) {
-    print("Recognized words: ${result.recognizedWords}");
-    print("Started Res43ts");
-    setState(() {
-      _lastWords = "$_lastWords ${result.recognizedWords} ";
-      _textController.text = _lastWords;
-    });
-    print("Sppech translated: ${_textController.text}");
-  }
-
-  void _stopListening() async {
-    await _speechToText.stop();
-    setState(() {});
   }
 
   Future<void> _initRecorder() async {
@@ -129,13 +77,11 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
     Directory tempDir = await getApplicationDocumentsDirectory();
     _audioPath = '${tempDir.path}/recorded_audio.aac';
     await _recorder!.startRecorder(toFile: _audioPath);
-    _startListening();
     setState(() => _isRecording = true);
   }
 
   Future<void> _stopRecording() async {
     await _recorder!.stopRecorder();
-    _stopListening();
     setState(() {
       _isRecording = false;
       _recordingDuration = Duration.zero;
