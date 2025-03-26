@@ -3,7 +3,9 @@
 /lib/firebase_options.dart
 /android/app/google-services.json
 firebase.json
-/functions/
+/functions/.env
+/functions/node_modules/
+/functions/*.local
 # Miscellaneous
 *.class
 *.log

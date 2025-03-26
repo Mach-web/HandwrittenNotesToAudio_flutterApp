@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "notestoaudio"
-  }
+    "default": "notestoaudio",
+    "notes-to-audio": "notes-to-audio"
+  },
+  "targets": {},
+  "etags": {}
 }
