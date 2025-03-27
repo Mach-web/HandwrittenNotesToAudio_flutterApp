@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:notestoaudio/Machine_learning/text_recognition.dart';
+import 'package:notestoaudio/machine_learning/text_recognition.dart';
 import 'package:notestoaudio/views/capture/edit_notes.dart';
 import 'package:notestoaudio/views/random_buttons.dart';
 

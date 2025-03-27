@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:docx_template/docx_template.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:notestoaudio/machine_learning/transcription.dart';
 
 class AudioRecordingPage extends StatefulWidget {
   const AudioRecordingPage({super.key});
@@ -26,6 +27,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   Duration _playingPosition = Duration.zero;
   Duration _playingTotalDuration = Duration.zero;
   final TextEditingController _textController = TextEditingController();
+  final Transcription _transcription = Transcription();
 
   @override
   void initState() {
@@ -180,12 +182,16 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
               label: Text(_isRecording ? 'Stop Recording' : 'Start Recording'),
               onPressed: _isRecording ? _stopRecording : _startRecording,
             ),
-            // const SizedBox(height: 20),
-            // ElevatedButton.icon(
-            //   icon: Icon(Icons.text_fields),
-            //   label: Text('Convert to Text'),
-            //   onPressed: _convertSpeechToText,
-            // ),
+            const SizedBox(height: 10),
+            ElevatedButton.icon(
+              icon: Icon(Icons.text_fields),
+              label: Text('Convert to Text'),
+              onPressed: () {
+                if (_audioPath != null) {
+                  _transcription.transcribeAudioAndCleanup(_audioPath!);
+                }
+              },
+            ),
             const SizedBox(height: 20),
             Text(
               'Converted Text:',
