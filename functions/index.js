@@ -9,7 +9,7 @@ exports.transcribeAudio = functions.https.onRequest(async (req, res) => {
   }
 
   try {
-    const apiKey = functions.config().assemblyai.apikey;
+    const apiKey = process.env.API_KEY;
     if (!apiKey) {
       throw new Error("AssemblyAI API key is not configured");
     }
@@ -40,7 +40,7 @@ exports.getTranscription = functions.https.onRequest(async (req, res) => {
   }
 
   try {
-    const apiKey = functions.config().assemblyai.apikey;
+    const apiKey = process.env.API_KEY;
     if (!apiKey) {
       throw new Error("AssemblyAI API key is not configured");
     }
