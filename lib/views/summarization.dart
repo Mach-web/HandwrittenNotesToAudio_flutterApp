@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
-import 'package:notestoaudio/Machine_learning/docs_pdf.dart';
+import 'package:notestoaudio/machine_learning/docs_pdf.dart';
 
 class SummarizationPage extends StatefulWidget {
   const SummarizationPage({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:get/get.dart';
-import 'package:notestoaudio/Machine_learning/text_to_audio.dart';
+import 'package:notestoaudio/machine_learning/text_to_audio.dart';
 import 'package:notestoaudio/controllers/text_controller.dart';
 import 'package:notestoaudio/download.dart';
 

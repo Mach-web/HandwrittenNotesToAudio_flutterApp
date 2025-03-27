@@ -26,8 +26,9 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
   Duration _recordingDuration = Duration.zero;
   Duration _playingPosition = Duration.zero;
   Duration _playingTotalDuration = Duration.zero;
-  final TextEditingController _textController = TextEditingController();
+
   final Transcription _transcription = Transcription();
+  bool _isTranscribeLoading = false;
 
   @override
   void initState() {
@@ -185,10 +186,43 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
             const SizedBox(height: 10),
             ElevatedButton.icon(
               icon: Icon(Icons.text_fields),
-              label: Text('Convert to Text'),
-              onPressed: () {
+              label:
+                  _isTranscribeLoading
+                      ? CircularProgressIndicator(color: Colors.white,)
+                      : Text('Convert to Text'),
+              style:
+                  _audioPath != null
+                      ? ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      )
+                      : null,
+              onPressed: () async {
                 if (_audioPath != null) {
-                  _transcription.transcribeAudioAndCleanup(_audioPath!);
+                  setState(() {
+                    _isTranscribeLoading = true;
+                  });
+                  bool isTranscribeComplete = await _transcription
+                      .transcribeAudioAndCleanup(audioPath: _audioPath!, context: context);
+                  setState(() {
+                    _isTranscribeLoading = !isTranscribeComplete;
+                  });
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Please record audio first before converting to text.',
+                      ),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
                 }
               },
             ),
@@ -200,9 +234,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
             Expanded(
               child: SingleChildScrollView(
                 child: Text(
-                  _textController.text.isNotEmpty
-                      ? _textController.text
-                      : 'No text converted yet.',
+                  _transcription.textController.text,
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -244,7 +276,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                   onPressed:
                       () => _download.downloadAsPDF(
                         context: context,
-                        convertedText: _textController.text,
+                        convertedText: _transcription.textController.text,
                       ),
                 ),
                 ElevatedButton.icon(
@@ -264,7 +296,7 @@ class _AudioRecordingPageState extends State<AudioRecordingPage> {
                   onPressed:
                       () => _download.downloadAsDOCX(
                         context: context,
-                        convertedText: _textController.text,
+                        convertedText: _transcription.textController.text,
                       ),
                 ),
               ],
